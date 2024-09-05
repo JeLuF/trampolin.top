@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unfolding Divs Animation</title>
+    <style>
+        .container {
+            width: 100%;
+        }
+        .container div {
+            width: 100%;
+            overflow: hidden;
+            max-height: 0;
+            background-color: lightblue;
+            margin-bottom: 10px;
+            transition: max-height 0.5s ease-out;
+        }
+        .container div.open {
+            max-height: 100px; /* Adjust to the desired height */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div>Content 1</div>
+        <div>Content 2</div>
+        <div>Content 3</div>
+        <div>Content 4</div>
+        <div>Content 5</div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const divs = document.querySelectorAll(".container div");
+            divs.forEach((div, index) => {
+                setTimeout(() => {
+                    div.classList.add("open");
+                }, index * 500); // Adjust timing as needed
+            });
+        });
+    </script>
+</body>
+</html>

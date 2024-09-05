@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parse Atom/RDF Feed</title>
+</head>
+<body>
+    <h1>Atom/RDF Feed Parser</h1>
+    <div id="feed"></div>
+
+    <script>
+        // URL of the Atom or RDF feed
+        //const feedUrl = 'https://www.hessenschau.de/index.rss';
+        const feedUrl = 'https://www.tagesschau.de/index~rdf.xml';
+
+        // Fetch the feed
+        fetch(feedUrl, { mode: 'no-cors'})
+            .then(response => response.text())
+            .then(xmlString => {
+		console.log(xmlString)
+                // Parse the XML string
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlString, 'text/xml');
+		console.log(xmlDoc);
+
+                // Example: Parse Atom feed
+                const entries = xmlDoc.querySelectorAll('entry');
+                const feedData = [];
+
+                entries.forEach(entry => {
+                    const title = entry.querySelector('title').textContent;
+                    const link = entry.querySelector('link').getAttribute('href');
+                    const summary = entry.querySelector('summary').textContent;
+
+                    feedData.push({ title, link, summary });
+                });
+
+                // Display parsed data
+                const feedContainer = document.getElementById('feed');
+                feedData.forEach(entry => {
+                    const entryElement = document.createElement('div');
+                    entryElement.innerHTML = `<h2>${entry.title}</h2><p><a href="${entry.link}">${entry.link}</a></p><p>${entry.summary}</p>`;
+                    feedContainer.appendChild(entryElement);
+                });
+            })
+            .catch(error => console.error('Error fetching or parsing the feed:', error));
+    </script>
+</body>
+</html>
+

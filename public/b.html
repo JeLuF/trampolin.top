@@ -1,0 +1,440 @@
+<html>
+ <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+/* @media (prefers-color-scheme: dark) { */
+  :root {
+    --background: #111111;
+    --color: white;
+    --background1: #333333;
+    --accent: #CC99FF;
+  }
+/* }
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: white;
+    --color: black;
+    --background1: #cccccc;
+    --accent: #552288;
+  }
+} */
+
+body {
+	background: var(--background);
+	font-family: sans-serif;
+	color: var(--color);
+}
+.container {  display: grid;
+  grid-template-columns: 1.5em 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: max-content max-content max-content; 
+  gap: 1px 1px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "Platz Punkte Punkte Initialen Name Name Name Name Verein Verein Verein Ue1 Ue1 Ue2 Ue2"
+    "caret Spruenge Spruenge Haltung Haltung Difficulty Difficulty HD HD Tof Tof Tof Penalty Penalty ."
+    "caret2 Spruenge2 Spruenge2 Haltung2 Haltung2 Difficulty2 Difficulty2 HD2 HD2 Tof2 Tof2 Tof2 Penalty2 Penalty2 .";
+  margin-bottom: 1ex;
+}
+
+.pflichtkuer {  display: grid;
+  grid-template-columns: 1.5em 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: max-content max-content max-content; 
+  gap: 1px 1px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "Platz Punkte Punkte Punkte Initialen Name Name Name Name Name Verein Verein Verein Verein Verein"
+    "caret Spruenge Haltung Haltung Difficulty Difficulty HD HD Tof Tof Tof Penalty Ue1 Ue1 Ue1"
+    "caret2 Spruenge2 Haltung2 Haltung2 Difficulty2 Difficulty2 HD2 HD2 Tof2 Tof2 Tof2 Penalty2 Ue2 Ue2 Ue2";
+  margin-bottom: 1ex;
+}
+
+.pflichtkuer_1_ {  display: grid;
+  grid-template-columns: 1.5em 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: max-content max-content max-content; 
+  gap: 1px 1px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "Platz Punkte Punkte Punkte Initialen Name Name Name Name Name Verein Verein Verein Verein Verein"
+    "caret Spruenge Haltung Haltung Difficulty Difficulty HD HD Tof Tof Tof Penalty Ue1 Ue1 Ue1"
+    ". .       _1_s1      _1_s2      _1_s3      _1_s4      _1_s5      _1_s6      _1_s7      _1_s8      _1_s9     _1_s10     _1_sl     . ."
+    ". _1_e1   _1_e1s1    _1_e1s2    _1_e1s3    _1_e1s4    _1_e1s5    _1_e1s6    _1_e1s7    _1_e1s8    _1_e1s9   _1_e1s10   _1_e1sl   _1_e1summe ."
+    ". _1_e2   _1_e2s1    _1_e2s2    _1_e2s3    _1_e2s4    _1_e2s5    _1_e2s6    _1_e2s7    _1_e2s8    _1_e2s9   _1_e2s10   _1_e2sl   _1_e2summe ."
+    ". _1_e3   _1_e3s1    _1_e3s2    _1_e3s3    _1_e3s4    _1_e3s5    _1_e3s6    _1_e3s7    _1_e3s8    _1_e3s9   _1_e3s10   _1_e3sl   _1_e3summe ."
+    ". _1_e4   _1_e4s1    _1_e4s2    _1_e4s3    _1_e4s4    _1_e4s5    _1_e4s6    _1_e4s7    _1_e4s8    _1_e4s9   _1_e4s10   _1_e4sl   _1_e4summe ."
+    ". _1_e5   _1_e5s1    _1_e5s2    _1_e5s3    _1_e5s4    _1_e5s5    _1_e5s6    _1_e5s7    _1_e5s8    _1_e5s9   _1_e5s10   _1_e5sl   _1_e5summe ."
+    ". _1_e6   _1_e6s1    _1_e6s2    _1_e6s3    _1_e6s4    _1_e6s5    _1_e6s6    _1_e6s7    _1_e6s8    _1_e6s9   _1_e6s10   _1_e6sl   _1_e6summe ."
+    ". _1_e_   _1_e_s1    _1_e_s2    _1_e_s3    _1_e_s4    _1_e_s5    _1_e_s6    _1_e_s7    _1_e_s8    _1_e_s9   _1_e_s10   _1_e_sl   _1_e_summe _1_e_summe"
+    "caret2 Spruenge2 Haltung2 Haltung2 Difficulty2 Difficulty2 HD2 HD2 Tof2 Tof2 Tof2 Penalty2 Ue2 Ue2 Ue2";
+
+  margin-bottom: 1ex;
+}
+
+.container div { padding: 12px 4px; overflow: hidden; white-space: nowrap; }
+.pflichtkuer div { padding: 12px 4px; overflow: hidden; white-space: nowrap; }
+.pflichtkuer_1_ div { padding: 12px 4px; overflow: hidden; white-space: nowrap; }
+.pflichtkuer_1_ ._1_ { padding: 4px 4px; overflow: hidden; white-space: nowrap; }
+
+.Platz { grid-area: Platz; background: var(--background1);}
+
+.Punkte { grid-area: Punkte; background: var(--background1);}
+
+.Initialen { grid-area: Initialen; background: var(--background1);}
+
+.Ue2 { grid-area: Ue2; background: var(--background1);}
+
+.Ue1 { grid-area: Ue1; background: var(--background1);}
+
+.Verein { grid-area: Verein;  background: var(--background1);}
+
+.Name { grid-area: Name; background: var(--background1);}
+
+.Spruenge { grid-area: Spruenge; }
+
+.Haltung { grid-area: Haltung; }
+
+.Difficulty { grid-area: Difficulty; }
+
+.HD { grid-area: HD; }
+
+.Tof { grid-area: Tof; }
+
+.Penalty { grid-area: Penalty; }
+
+.Spruenge2 { grid-area: Spruenge2; }
+
+.Haltung2 { grid-area: Haltung2; }
+
+.Difficulty2 { grid-area: Difficulty2; }
+
+.HD2 { grid-area: HD2; }
+
+.Tof2 { grid-area: Tof2; }
+
+.Penalty2 { grid-area: Penalty2; }
+
+.caret { grid-area: caret; }
+.caret svg { color: var(--accent); }
+.caret2 { grid-area: caret2; }
+.caret2 svg { color: var(--accent); }
+
+.header { font-size: 70%; color: var(--accent);}
+
+._1_e1s1 { grid-area: _1_e1s1; }
+._1_e1s2 { grid-area: _1_e1s2; }
+._1_e1s3 { grid-area: _1_e1s3; }
+._1_e1s4 { grid-area: _1_e1s4; }
+._1_e1s5 { grid-area: _1_e1s5; }
+._1_e1s6 { grid-area: _1_e1s6; }
+._1_e1s7 { grid-area: _1_e1s7; }
+._1_e1s8 { grid-area: _1_e1s8; }
+._1_e1s9 { grid-area: _1_e1s9; }
+._1_e1s10 { grid-area: _1_e1s10; }
+._1_e1sl { grid-area: _1_e1sl; }
+._1_e1summe { grid-area: _1_e1summe;  border: none !important; background: var(--background) !important;}
+
+
+._1_e2s1 { grid-area: _1_e2s1; }
+._1_e2s2 { grid-area: _1_e2s2; }
+._1_e2s3 { grid-area: _1_e2s3; }
+._1_e2s4 { grid-area: _1_e2s4; }
+._1_e2s5 { grid-area: _1_e2s5; }
+._1_e2s6 { grid-area: _1_e2s6; }
+._1_e2s7 { grid-area: _1_e2s7; }
+._1_e2s8 { grid-area: _1_e2s8; }
+._1_e2s9 { grid-area: _1_e2s9; }
+._1_e2s10 { grid-area: _1_e2s10; }
+._1_e2sl { grid-area: _1_e2sl; }
+._1_e2summe { grid-area: _1_e2summe;  border: none !important; background: var(--background) !important;}
+
+
+._1_e3s1 { grid-area: _1_e3s1; }
+._1_e3s2 { grid-area: _1_e3s2; }
+._1_e3s3 { grid-area: _1_e3s3; }
+._1_e3s4 { grid-area: _1_e3s4; }
+._1_e3s5 { grid-area: _1_e3s5; }
+._1_e3s6 { grid-area: _1_e3s6; }
+._1_e3s7 { grid-area: _1_e3s7; }
+._1_e3s8 { grid-area: _1_e3s8; }
+._1_e3s9 { grid-area: _1_e3s9; }
+._1_e3s10 { grid-area: _1_e3s10; }
+._1_e3sl { grid-area: _1_e3sl; }
+._1_e3summe { grid-area: _1_e3summe;  border: none !important; background: var(--background) !important;}
+
+
+._1_e4s1 { grid-area: _1_e4s1; }
+._1_e4s2 { grid-area: _1_e4s2; }
+._1_e4s3 { grid-area: _1_e4s3; }
+._1_e4s4 { grid-area: _1_e4s4; }
+._1_e4s5 { grid-area: _1_e4s5; }
+._1_e4s6 { grid-area: _1_e4s6; }
+._1_e4s7 { grid-area: _1_e4s7; }
+._1_e4s8 { grid-area: _1_e4s8; }
+._1_e4s9 { grid-area: _1_e4s9; }
+._1_e4s10 { grid-area: _1_e4s10; }
+._1_e4sl { grid-area: _1_e4sl; }
+._1_e4summe { grid-area: _1_e4summe;  border: none !important; background: var(--background) !important;}
+
+
+._1_e5s1 { grid-area: _1_e5s1; }
+._1_e5s2 { grid-area: _1_e5s2; }
+._1_e5s3 { grid-area: _1_e5s3; }
+._1_e5s4 { grid-area: _1_e5s4; }
+._1_e5s5 { grid-area: _1_e5s5; }
+._1_e5s6 { grid-area: _1_e5s6; }
+._1_e5s7 { grid-area: _1_e5s7; }
+._1_e5s8 { grid-area: _1_e5s8; }
+._1_e5s9 { grid-area: _1_e5s9; }
+._1_e5s10 { grid-area: _1_e5s10; }
+._1_e5sl { grid-area: _1_e5sl; }
+._1_e5summe { grid-area: _1_e5summe;  border: none !important; background: var(--background) !important;}
+
+
+._1_e6s1 { grid-area: _1_e6s1; }
+._1_e6s2 { grid-area: _1_e6s2; }
+._1_e6s3 { grid-area: _1_e6s3; }
+._1_e6s4 { grid-area: _1_e6s4; }
+._1_e6s5 { grid-area: _1_e6s5; }
+._1_e6s6 { grid-area: _1_e6s6; }
+._1_e6s7 { grid-area: _1_e6s7; }
+._1_e6s8 { grid-area: _1_e6s8; }
+._1_e6s9 { grid-area: _1_e6s9; }
+._1_e6s10 { grid-area: _1_e6s10; }
+._1_e6sl { grid-area: _1_e6sl; }
+._1_e6summe { grid-area: _1_e6summe;  border: none !important; background: var(--background) !important;}
+
+
+._1_e_s1 { grid-area: _1_e_s1;  border: none !important; background: var(--background) !important;}
+._1_e_s2 { grid-area: _1_e_s2;  border: none !important; background: var(--background) !important;}
+._1_e_s3 { grid-area: _1_e_s3;  border: none !important; background: var(--background) !important;}
+._1_e_s4 { grid-area: _1_e_s4;  border: none !important; background: var(--background) !important;}
+._1_e_s5 { grid-area: _1_e_s5;  border: none !important; background: var(--background) !important;}
+._1_e_s6 { grid-area: _1_e_s6;  border: none !important; background: var(--background) !important;}
+._1_e_s7 { grid-area: _1_e_s7;  border: none !important; background: var(--background) !important;}
+._1_e_s8 { grid-area: _1_e_s8;  border: none !important; background: var(--background) !important;}
+._1_e_s9 { grid-area: _1_e_s9;  border: none !important; background: var(--background) !important;}
+._1_e_s10 { grid-area: _1_e_s10;  border: none !important; background: var(--background) !important;}
+._1_e_sl { grid-area: _1_e_sl;  border: none !important; background: var(--background) !important;}
+._1_e_summe { grid-area: _1_e_summe; border: none !important; background: var(--background) !important; text-align: left !important;}
+
+._1_e1 { grid-area: _1_e1; border: none !important; color: var(--accent); background: var(--background) !important;}
+._1_e2 { grid-area: _1_e2; border: none !important; color: var(--accent); background: var(--background) !important;}
+._1_e3 { grid-area: _1_e3; border: none !important; color: var(--accent); background: var(--background) !important;}
+._1_e4 { grid-area: _1_e4; border: none !important; color: var(--accent); background: var(--background) !important;}
+._1_e5 { grid-area: _1_e5; border: none !important; color: var(--accent); background: var(--background) !important;}
+._1_e6 { grid-area: _1_e6; border: none !important; color: var(--accent); background: var(--background) !important;}
+._1_e_ { grid-area: _1_e_; border: none !important; color: var(--accent); background: var(--background) !important;}
+
+._1_s1 { grid-area: _1_s1; border: none !important; color: var(--accent); background: var(--background) !important;}
+._1_s2 { grid-area: _1_s2; border: none !important; color: var(--accent); background: var(--background) !important;}
+._1_s3 { grid-area: _1_s3; border: none !important; color: var(--accent); background: var(--background) !important;}
+._1_s4 { grid-area: _1_s4; border: none !important; color: var(--accent); background: var(--background) !important;}
+._1_s5 { grid-area: _1_s5; border: none !important; color: var(--accent); background: var(--background) !important;}
+._1_s6 { grid-area: _1_s6; border: none !important; color: var(--accent); background: var(--background) !important;}
+._1_s7 { grid-area: _1_s7; border: none !important; color: var(--accent); background: var(--background) !important;}
+._1_s8 { grid-area: _1_s8; border: none !important; color: var(--accent); background: var(--background) !important;}
+._1_s9 { grid-area: _1_s9; border: none !important; color: var(--accent); background: var(--background) !important;}
+._1_s10 { grid-area: _1_s10; border: none !important; color: var(--accent); background: var(--background) !important;}
+._1_sl { grid-area: _1_sl; border: none !important; color: var(--accent); background: var(--background) !important;}
+
+.pflichtkuer ._1_ {display: none;}
+._1_ { border: solid 1px silver; text-align: center; background: #114411;}
+.b {background: #111155;}
+.r {background: #551111;}
+
+svg {
+	width: 1em;
+}
+
+@media only screen and (min-width: 700px) {
+  .header {display: none !important;}
+  .Spruenge:before {content: " Sprünge"; font-size: 70%; color: var(--accent);}
+  .Spruenge2:before {content: " Sprünge"; font-size: 70%; color: var(--accent);}
+  .Haltung:before {content: "Haltung "; font-size: 70%; color: var(--accent);}
+  .Haltung2:before {content: "Haltung "; font-size: 70%; color: var(--accent);}
+  .HD:before {content: "HD "; font-size: 70%; color: var(--accent);}
+  .HD2:before {content: "HD "; font-size: 70%; color: var(--accent);}
+  .ToF:before {content: "ToF "; font-size: 70%; color: var(--accent);}
+  .ToF2:before {content: "ToF "; font-size: 70%; color: var(--accent);}
+  .Penalty:before {content: "Strafe "; font-size: 70%; color: var(--accent);}
+  .Penalty2:before {content: "Strafe "; font-size: 70%; color: var(--accent);}
+  .Ue1:after {content: " Punkte"; font-size: 70%; color: var(--accent);}
+  .Ue2:after {content: " Punkte"; font-size: 70%; color: var(--accent);}
+
+  .pflichtkuer {  display: grid;
+	  grid-template-columns: 1.5em 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+	  grid-template-rows: max-content max-content max-content; 
+	  gap: 1px 1px;
+	  grid-auto-flow: row;
+	  grid-template-areas:
+	    "Platz Punkte Punkte Punkte Initialen Name Name Name Name Name Verein Verein Verein Verein Verein"
+	    "caret Spruenge Spruenge Haltung Haltung Difficulty Difficulty HD HD Tof Tof Penalty Ue1 Ue1 Ue1"
+	    "caret2 Spruenge2 Spruenge2 Haltung2 Haltung2 Difficulty2 Difficulty2 HD2 HD2 Tof2 Tof2 Penalty2 Ue2 Ue2 Ue2";
+	  margin-bottom: 1ex;
+  }
+
+  .pflichtkuer_1_ {  display: grid;
+	  grid-template-columns: 1.5em 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+	  grid-template-rows: max-content max-content max-content; 
+	  gap: 1px 1px;
+	  grid-auto-flow: row;
+	  grid-template-areas:
+	    "Platz Punkte Punkte Punkte Initialen Name Name Name Name Name Verein Verein Verein Verein Verein"
+	    "caret Spruenge Haltung Haltung Difficulty Difficulty HD HD Tof Tof Tof Penalty Ue1 Ue1 Ue1"
+	    ". .       _1_s1      _1_s2      _1_s3      _1_s4      _1_s5      _1_s6      _1_s7      _1_s8      _1_s9     _1_s10     _1_sl     . ."
+	    ". _1_e1   _1_e1s1    _1_e1s2    _1_e1s3    _1_e1s4    _1_e1s5    _1_e1s6    _1_e1s7    _1_e1s8    _1_e1s9   _1_e1s10   _1_e1sl   _1_e1summe ."
+	    ". _1_e2   _1_e2s1    _1_e2s2    _1_e2s3    _1_e2s4    _1_e2s5    _1_e2s6    _1_e2s7    _1_e2s8    _1_e2s9   _1_e2s10   _1_e2sl   _1_e2summe ."
+	    ". _1_e3   _1_e3s1    _1_e3s2    _1_e3s3    _1_e3s4    _1_e3s5    _1_e3s6    _1_e3s7    _1_e3s8    _1_e3s9   _1_e3s10   _1_e3sl   _1_e3summe ."
+	    ". _1_e4   _1_e4s1    _1_e4s2    _1_e4s3    _1_e4s4    _1_e4s5    _1_e4s6    _1_e4s7    _1_e4s8    _1_e4s9   _1_e4s10   _1_e4sl   _1_e4summe ."
+	    ". _1_e5   _1_e5s1    _1_e5s2    _1_e5s3    _1_e5s4    _1_e5s5    _1_e5s6    _1_e5s7    _1_e5s8    _1_e5s9   _1_e5s10   _1_e5sl   _1_e5summe ."
+	    ". _1_e6   _1_e6s1    _1_e6s2    _1_e6s3    _1_e6s4    _1_e6s5    _1_e6s6    _1_e6s7    _1_e6s8    _1_e6s9   _1_e6s10   _1_e6sl   _1_e6summe ."
+	    ". _1_e_   _1_e_s1    _1_e_s2    _1_e_s3    _1_e_s4    _1_e_s5    _1_e_s6    _1_e_s7    _1_e_s8    _1_e_s9   _1_e_s10   _1_e_sl   _1_e_summe _1_e_summe"
+	    "caret2 Spruenge2 Haltung2 Haltung2 Difficulty2 Difficulty2 HD2 HD2 Tof2 Tof2 Tof2 Penalty2 Ue2 Ue2 Ue2";
+
+	  margin-bottom: 1ex;
+  }
+  .pflichtkuer_1_ {  display: grid;
+	  grid-template-columns: 1.5em 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+	  grid-template-rows: max-content max-content max-content; 
+	  gap: 1px 1px;
+	  grid-auto-flow: row;
+	  grid-template-areas:
+	    "Platz Punkte Punkte Punkte Initialen Name Name Name Name Name Verein Verein Verein Verein Verein"
+	    "caret Spruenge Spruenge Haltung Haltung Difficulty Difficulty HD HD Tof Tof Penalty Ue1 Ue1 Ue1"
+	    ". .       _1_s1      _1_s2      _1_s3      _1_s4      _1_s5      _1_s6      _1_s7      _1_s8      _1_s9     _1_s10     _1_sl     . ."
+	    ". _1_e1   _1_e1s1    _1_e1s2    _1_e1s3    _1_e1s4    _1_e1s5    _1_e1s6    _1_e1s7    _1_e1s8    _1_e1s9   _1_e1s10   _1_e1sl   _1_e1summe ."
+	    ". _1_e2   _1_e2s1    _1_e2s2    _1_e2s3    _1_e2s4    _1_e2s5    _1_e2s6    _1_e2s7    _1_e2s8    _1_e2s9   _1_e2s10   _1_e2sl   _1_e2summe ."
+	    ". _1_e3   _1_e3s1    _1_e3s2    _1_e3s3    _1_e3s4    _1_e3s5    _1_e3s6    _1_e3s7    _1_e3s8    _1_e3s9   _1_e3s10   _1_e3sl   _1_e3summe ."
+	    ". _1_e4   _1_e4s1    _1_e4s2    _1_e4s3    _1_e4s4    _1_e4s5    _1_e4s6    _1_e4s7    _1_e4s8    _1_e4s9   _1_e4s10   _1_e4sl   _1_e4summe ."
+	    ". _1_e5   _1_e5s1    _1_e5s2    _1_e5s3    _1_e5s4    _1_e5s5    _1_e5s6    _1_e5s7    _1_e5s8    _1_e5s9   _1_e5s10   _1_e5sl   _1_e5summe ."
+	    ". _1_e6   _1_e6s1    _1_e6s2    _1_e6s3    _1_e6s4    _1_e6s5    _1_e6s6    _1_e6s7    _1_e6s8    _1_e6s9   _1_e6s10   _1_e6sl   _1_e6summe ."
+	    ". _1_e_   _1_e_s1    _1_e_s2    _1_e_s3    _1_e_s4    _1_e_s5    _1_e_s6    _1_e_s7    _1_e_s8    _1_e_s9   _1_e_s10   _1_e_sl   _1_e_summe _1_e_summe"
+	    "caret2 Spruenge2 Spruenge2 Haltung2 Haltung2 Difficulty2 Difficulty2 HD2 HD2 Tof2 Tof2 Penalty2 Ue2 Ue2 Ue2";
+
+	  margin-bottom: 1ex;
+  }
+
+
+}
+
+</style>
+
+ </head>
+ <body>
+
+<H2>Dorfmeisterschaft</H2>
+<h3>WK3 - m/w 2000-2010</h3>
+<div class="block pflichtkuer header" >
+  <div class="Platz">Pl.</div>
+  <div class="Punkte">Punkte</div>
+  <div class="Initialen"></div>
+  <div class="Ue2">K&uuml;r</div>
+  <div class="Ue1">Pflicht</div>
+  <div class="Verein">Verein</div>
+  <div class="Name">Name</div>
+  <div class="Spruenge">Sp.</div>
+  <div class="Haltung">Haltung</div>
+  <div class="Difficulty"></div>
+  <div class="HD">HD</div>
+  <div class="Tof">ToF</div>
+  <div class="Penalty">Stf.</div>
+  <div class="Spruenge2">Sp.</div>
+  <div class="Haltung2">Haltung</div>
+  <div class="Difficulty2">Schwierig-<br>keit</div>
+  <div class="HD2">HD</div>
+  <div class="Tof2">ToF</div>
+  <div class="Penalty2">Stf.</div>
+</div>
+
+<div class="block pflichtkuer">
+  <div class="Platz">1</div>
+  <div class="Punkte">89.165</div>
+  <div class="Initialen">M.</div>
+  <div class="Ue2">47.830</div>
+  <div class="Ue1">41.335</div>
+  <div class="Verein">DTV K&auml;ngurus</div>
+  <div class="Name">Feyh</div>
+  <div class="Spruenge">10</div>
+  <div class="Haltung">16.8</div>
+  <div class="Difficulty">-</div>
+  <div class="HD">9.65</div>
+  <div class="Tof">14.885</div>
+  <div class="Penalty">-</div>
+  <div class="Spruenge2">10</div>
+  <div class="Haltung2">13.9</div>
+  <div class="Difficulty2">10.2</div>
+  <div class="HD2">9.45</div>
+  <div class="Tof2">14.280</div>
+  <div class="Penalty2">-</div>
+  <div class="caret" id="c1"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentcolor" d="M256 0a256 256 0 1 0 0 512A256 256 0 1 0 256 0zM135 241c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l87 87 87-87c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9L273 345c-9.4 9.4-24.6 9.4-33.9 0L135 241z"/></svg></div>
+  <div class="caret2" onclick="alert('Nur der oberste Knopf funktioniert')" ><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentcolor" d="M256 0a256 256 0 1 0 0 512A256 256 0 1 0 256 0zM135 241c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l87 87 87-87c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9L273 345c-9.4 9.4-24.6 9.4-33.9 0L135 241z"/></svg></div>
+
+<div class="_1_ _1_e1s1">1</div><div class="b _1_ _1_e1s2">1</div><div class="r _1_ _1_e1s3">2</div><div class="_1_ _1_e1s4">1</div><div class="_1_ _1_e1s5">1</div><div class="_1_ _1_e1s6">2</div><div class="_1_ _1_e1s7">2</div><div class="_1_ _1_e1s8">2</div><div class="_1_ _1_e1s9">2</div><div class="b _1_ _1_e1s10">1</div><div class="_1_ _1_e1sl">0</div><div class="_1_ _1_e1summe">8.5</div>
+
+<div class="_1_ _1_e2s1">1</div><div class="_1_ _1_e2s2">2</div><div class="r _1_ _1_e2s3">2</div><div class="_1_ _1_e2s4">1</div><div class="_1_ _1_e2s5">1</div><div class="r _1_ _1_e2s6">3</div><div class="_1_ _1_e2s7">2</div><div class="_1_ _1_e2s8">2</div><div class="r _1_ _1_e2s9">3</div><div class="_1_ _1_e2s10">2</div><div class="r _1_ _1_e2sl">1</div><div class="_1_ _1_e2summe">8.0</div>
+
+<div class="_1_ _1_e3s1">1</div><div class="_1_ _1_e3s2">2</div><div class="_1_ _1_e3s3">1</div><div class="_1_ _1_e3s4">1</div><div class="_1_ _1_e3s5">1</div><div class="_1_ _1_e3s6">2</div><div class="_1_ _1_e3s7">2</div><div class="_1_ _1_e3s8">2</div><div class="b _1_ _1_e3s9">1</div><div class="_1_ _1_e3s10">2</div><div class="_1_ _1_e3sl">0</div><div class="_1_ _1_e3summe">8.5</div>
+
+<div class="_1_ _1_e4s1">1</div><div class="_1_ _1_e4s2">2</div><div class="_1_ _1_e4s3">1</div><div class="r _1_ _1_e4s4">2</div><div class="_1_ _1_e4s5">1</div><div class="r _1_ _1_e4s6">3</div><div class="_1_ _1_e4s7">2</div><div class="_1_ _1_e4s8">2</div><div class="_1_ _1_e4s9">2</div><div class="b _1_ _1_e4s10">1</div><div class="_1_ _1_e4sl">0</div><div class="_1_ _1_e4summe">8.3</div>
+
+<div class="_1_ _1_e5s1">1</div><div class="_1_ _1_e5s2">2</div><div class="_1_ _1_e5s3">1</div><div class="_1_ _1_e5s4">1</div><div class="_1_ _1_e5s5">1</div><div class="_1_ _1_e5s6">2</div><div class="_1_ _1_e5s7">2</div><div class="_1_ _1_e5s8">2</div><div class="_1_ _1_e5s9">2</div><div class="_1_ _1_e5s10">2</div><div class="_1_ _1_e5sl">0</div><div class="_1_ _1_e5summe">8.4</div>
+
+<div class="_1_ _1_e6s1">1</div><div class="_1_ _1_e6s2">2</div><div class="_1_ _1_e6s3">1</div><div class="_1_ _1_e6s4">1</div><div class="_1_ _1_e6s5">1</div><div class="_1_ _1_e6s6">2</div><div class="b _1_ _1_e6s7">1</div><div class="_1_ _1_e6s8">2</div><div class="b _1_ _1_e6s9">1</div><div class="_1_ _1_e6s10">2</div><div class="_1_ _1_e6sl" style="background: var(--background);"> </div><div class="_1_ _1_e6summe">8.6</div>
+
+<div class="_1_ _1_e_s1">2</div><div class="_1_ _1_e_s2">4</div><div class="_1_ _1_e_s3">2</div><div class="_1_ _1_e_s4">2</div><div class="_1_ _1_e_s5">2</div><div class="_1_ _1_e_s6">4</div><div class="_1_ _1_e_s7">4</div><div class="_1_ _1_e_s8">4</div><div class="_1_ _1_e_s9">4</div><div class="_1_ _1_e_s10">4</div><div class="_1_ _1_e_sl">0</div><div class="_1_ _1_e_summe">16.8</div>
+
+<div class="_1_ _1_e1">E1</div>
+<div class="_1_ _1_e2">E2</div>
+<div class="_1_ _1_e3">E3</div>
+<div class="_1_ _1_e4">E4</div>
+<div class="_1_ _1_e5">E5</div>
+<div class="_1_ _1_e6">E6</div>
+<div class="_1_ _1_e_">E</div>
+<div class="_1_ _1_s1">1</div>
+<div class="_1_ _1_s2">2</div>
+<div class="_1_ _1_s3">3</div>
+<div class="_1_ _1_s4">4</div>
+<div class="_1_ _1_s5">5</div>
+<div class="_1_ _1_s6">6</div>
+<div class="_1_ _1_s7">7</div>
+<div class="_1_ _1_s8">8</div>
+<div class="_1_ _1_s9">9</div>
+<div class="_1_ _1_s10">10</div>
+<div class="_1_ _1_sl">L</div>
+</div>
+
+<div class="block pflichtkuer">
+  <div class="Platz">2</div>
+  <div class="Punkte">84.525</div>
+  <div class="Initialen">J.</div>
+  <div class="Ue2">45.335</div>
+  <div class="Ue1">39.190</div>
+  <div class="Verein">Triffis Alkmaar</div>
+  <div class="Name">Windig</div>
+  <div class="Spruenge">10</div>
+  <div class="Haltung">16.1</div>
+  <div class="Difficulty">-</div>
+  <div class="HD">9.45</div>
+  <div class="Tof">13.640</div>
+  <div class="Penalty">-</div>
+  <div class="Spruenge2">10</div>
+  <div class="Haltung2">13.4</div>
+  <div class="Difficulty2">9.4</div>
+  <div class="HD2">9.35</div>
+  <div class="Tof2">13.185</div>
+  <div class="Penalty2">-</div>
+  <div class="caret" onclick="alert('Nur der oberste Knopf funktioniert')" ><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentcolor" d="M256 0a256 256 0 1 0 0 512A256 256 0 1 0 256 0zM135 241c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l87 87 87-87c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9L273 345c-9.4 9.4-24.6 9.4-33.9 0L135 241z"/></svg></div>
+  <div class="caret2" onclick="alert('Nur der oberste Knopf funktioniert')" ><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentcolor" d="M256 0a256 256 0 1 0 0 512A256 256 0 1 0 256 0zM135 241c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l87 87 87-87c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9L273 345c-9.4 9.4-24.6 9.4-33.9 0L135 241z"/></svg></div>
+</div>
+
+ </body>
+</html>
+<script>
+	console.log("Hallo");
+	document.getElementById("c1").addEventListener("click", (e) => {
+		var block = e.target.closest(".block")
+		block.classList.toggle("pflichtkuer")
+		block.classList.toggle("pflichtkuer_1_")
+	});
+</script>

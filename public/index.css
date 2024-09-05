@@ -1,0 +1,604 @@
+:root {
+  --header: #D8232A;
+  --rowdark: gainsboro;
+  --rowmedium: lightgray;
+  --rowlight: rgb(252, 252, 252);
+}
+
+
+body {
+	font-family: sans-serif;
+  margin: 0;
+}
+
+body:not(.OBS)::before {
+  content: "";
+  background: url('/dtb-logo-red.svg');
+  background-size: contain;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 176px;  /* Adjust size as needed */
+  height: 36px; /* Adjust size as needed */
+  display: block;
+}
+
+body.OBS {
+  /* transform: scale(1.5);
+  transform-origin: top;
+  width: 100vw;
+  overflow-x: hidden; */
+  zoom: 170%;
+}
+
+select {
+  font-size: 150%;
+  font-weight: bold;
+  border-bottom: solid 1px silver;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  width: 15em;
+}
+
+select#veranstaltung {
+  margin-top: 1ex;
+}
+
+#countdown-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 10px;
+  background-color: var(--header);
+  transition: width 1s linear;
+  z-index: 1000; /* Ensure the bar is above other content */
+}
+
+/*
+.einzel {
+  font-weight: normal !important;
+  background: ghostwhite !important;
+}
+*/
+
+.vorkampf {  display: grid;
+  grid-template-columns: 3em 2fr 1fr 4em 4em 5em;
+  grid-template-rows: auto auto;
+  gap: 2px 2px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "Platz Name Verein vk1 vk2 punkte"
+    ". Details Details Details Details .";
+}
+
+.finale {  display: grid;
+  grid-template-columns: 3em 2fr 1fr 5em;
+  grid-template-rows: auto auto;
+  gap: 2px 2px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "Platz Name Verein punkte"
+    ". Details Details .";
+}
+
+
+
+.Platz {
+  justify-self: stretch;
+  grid-area: Platz;
+  font-weight: bold;
+  background: var(--rowdark);
+  margin: 1px;
+  padding: 3px;
+  text-align: center;
+}
+
+.Name {
+  justify-self: stretch;
+  grid-area: Name;
+  font-weight: bold;
+  background: var(--rowdark);
+  margin: 1px;
+  padding: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+
+.Verein {
+  justify-self: stretch;
+  grid-area: Verein;
+  font-weight: bold;
+  background: var(--rowdark);
+  margin: 1px;
+  padding: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.vk1 {
+  justify-self: stretch;
+  text-align: right;
+  grid-area: vk1;
+  font-weight: bold;
+  background: var(--rowdark);
+  margin: 1px;
+  padding: 3px;
+}
+
+.vk2 {
+  justify-self: stretch;
+  text-align: right;
+  grid-area: vk2;
+  font-weight: bold;
+  background: var(--rowdark);
+  margin: 1px;
+  padding: 3px;
+}
+
+.punkte {
+  justify-self: stretch;
+  text-align: right;
+  grid-area: punkte;
+  font-weight: bold;
+  background: var(--rowdark);
+  margin: 1px;
+  padding: 3px;
+}
+
+.heading div {
+  background: var(--header) !important;
+  color: white !important;
+}
+
+.Details {  
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr auto auto;
+  gap: 2px 2px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "h_haltung h_schwierigkeit h_tof h_hd h_strafwert h_punkte"
+    "haltung1 schwierigkeit1 tof1 hd1 strafwert1 punkte1"
+    "haltung2 schwierigkeit2 tof2 hd2 strafwert2 punkte2";
+  grid-area: Details;
+  font-size: 90%;
+  display: grid;
+  color: darkgreen;
+  text-align: right;
+}
+
+.closed .Details {
+  display: none;
+}
+
+.open .Details {
+  display: grid;
+}
+
+.Details div {
+  background: var(--rowlight);
+}
+.h_haltung {
+  justify-self: stretch;
+  grid-area: h_haltung;
+  padding: 3px;
+}
+
+.h_schwierigkeit {
+  justify-self: stretch;
+  grid-area: h_schwierigkeit;
+  padding: 3px;
+}
+
+.h_tof {
+  justify-self: stretch;
+  grid-area: h_tof;
+  padding: 3px;
+}
+
+.h_hd {
+  justify-self: stretch;
+  grid-area: h_hd;
+  padding: 3px;
+}
+
+.h_strafwert {
+  justify-self: stretch;
+  grid-area: h_strafwert;
+  padding: 3px;
+}
+
+.h_punkte {
+  justify-self: stretch;
+  grid-area: h_punkte;
+  padding: 3px;
+}
+
+.haltung1 {
+  justify-self: stretch;
+  text-align: right;
+  grid-area: haltung1;
+}
+
+.schwierigkeit1 {
+  justify-self: stretch;
+  text-align: right;
+  grid-area: schwierigkeit1;
+}
+
+.tof1 {
+  justify-self: stretch;
+  text-align: right;
+  grid-area: tof1;
+}
+
+.hd1 {
+  justify-self: stretch;
+  text-align: right;
+  grid-area: hd1;
+}
+
+.strafwert1 {
+  justify-self: stretch;
+  text-align: right;
+  grid-area: strafwert1;
+}
+
+.punkte1 {
+  justify-self: stretch;
+  text-align: right;
+  grid-area: punkte1;
+}
+
+.haltung2 {
+  justify-self: stretch;
+  text-align: right;
+  grid-area: haltung2;
+}
+
+.schwierigkeit2 {
+  justify-self: stretch;
+  text-align: right;
+  grid-area: schwierigkeit2;
+}
+
+.tof2 {
+  justify-self: stretch;
+  text-align: right;
+  grid-area: tof2;
+}
+
+.hd2 {
+  justify-self: stretch;
+  text-align: right;
+  grid-area: hd2;
+}
+
+.strafwert2 {
+  justify-self: stretch;
+  text-align: right;
+  grid-area: strafwert2;
+}
+
+.punkte2 {
+  justify-self: stretch;
+  text-align: right;
+  grid-area: punkte2;
+}
+
+.icon-container {
+  position: relative;
+}
+
+.icon-container::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 0;
+  width: 1em;
+  height: 1em;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.clickable.closed .icon-container::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg>');
+  background-position: center;
+  margin-left: 1em;
+}
+
+.clickable.open .icon-container::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>');
+  background-position: center;
+  margin-left: 1em;
+}
+
+.clickable.closed {
+  cursor: zoom-in;
+}
+
+.clickable.open {
+  cursor: zoom-out;
+}
+
+
+.team {  display: grid;
+  grid-template-columns: 3em 1fr 7.5em 7.5em 5em;
+  grid-template-rows: 1fr;
+  gap: 1px 1px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "Platz Mannschaft Erste Zweite Ergebnis";
+}
+
+.teamfinale {  display: grid;
+  grid-template-columns: 3em 1fr 4em 5em;
+  grid-template-rows: auto;
+  gap: 1px 1px;
+  grid-auto-flow: row;
+  grid-template-areas:
+  "Platz Mannschaft Erste Ergebnis";
+}
+
+.team.einzel div, .teamfinale.einzel div{
+  background: ghostwhite;
+}
+
+.team .Platz, .teamfinale .Platz { 
+  grid-area: Platz;
+  justify-self: stretch;
+  background: var(--rowdark);
+  margin: 1px;
+  padding: 3px;
+}
+
+.team .Mannschaft, .teamfinale .Mannschaft { 
+  grid-area: Mannschaft; 
+  justify-self: stretch;
+  background: var(--rowdark);
+  margin: 1px;
+  padding: 3px;
+}
+
+.team .Erste, .teamfinale .Erste { 
+  grid-area: Erste; 
+  justify-self: stretch;
+  background: var(--rowdark);
+  margin: 1px;
+  padding: 3px;
+  text-align: right;
+}
+
+.team .Zweite { 
+  grid-area: Zweite; 
+  justify-self: stretch;
+  background: var(--rowdark);
+  margin: 1px;
+  padding: 3px;
+  text-align: right;
+}
+
+.team .Ergebnis, .teamfinale .Ergebnis { 
+  grid-area: Ergebnis; 
+  justify-self: stretch;
+  background: var(--rowdark);
+  margin: 1px;
+  padding: 3px;
+}
+
+.team:not(.einzel), .teamfinale:not(.einzel) {
+  font-weight: bold;
+}
+
+.empty {
+  background: var(--rowlight) !important;
+}
+
+.gewertet {
+  font-weight: bold;
+  color: darkblue;
+}
+
+.kurz {
+  display: none;
+}
+.lang {
+  display: inline;
+}
+
+h2 {
+  padding-left: 5px;
+}
+
+body.OBS .select-container {
+  display: none;
+}
+
+.OBS .Phase {
+  display: none;
+}
+
+.OBS #tabelle {
+  margin-top: 20px;
+}
+
+.legal {
+  margin: 8em auto 1em auto;
+  background: var(--header);
+  color: white;
+  padding: 5px;
+  display: inline-block;
+  border-radius: 3px;
+}
+
+.legal a {
+  color: white;
+  text-decoration: none;
+}
+
+.teamdetail {
+  display: grid;
+  grid-template-columns: 3em 1fr 5em;
+  grid-template-rows: 1fr;
+  gap: 1px 1px;
+  grid-auto-flow: row;
+  grid-template-areas: ". Details .";
+}
+
+/* Media query for small screens */
+@media (max-width: 600px) {
+  .kurz {
+      display: inline;
+  }
+  .lang {
+      display: none;
+  }
+  .team {
+    grid-template-columns: 2em 1fr 3em 3em 4em;
+  }
+  .teamfinale {
+    grid-template-columns: 2em 1fr 3.5em 4em;
+  }
+  .teamdetail {
+    grid-template-columns: 2em 1fr 4em;
+  }
+  body:not(.OBS)::before {
+    width: 88px;  /* Adjust size as needed */
+    height: 18px; /* Adjust size as needed */
+  }
+  
+}
+
+.select-container {
+  width: 100%;
+}
+
+.select {
+  margin: 2em auto 2em auto;
+  width: 20em;
+}
+
+@media (min-width: 900px) {
+  #tabelle {
+    width: 880px;
+    margin: 0 auto;
+  }
+  .select {
+    margin: 1em auto 2em auto;
+  }
+
+}
+
+body.kompakt .team {  
+  grid-template-columns: 3em 15em 0em 0em 5em;
+  grid-template-areas:
+    "Platz Mannschaft Erste Zweite Ergebnis";
+}
+body.kompakt .teamfinale { 
+  grid-template-columns: 3em 15em 0em 5em;
+  grid-template-areas:
+  "Platz Mannschaft Erste Ergebnis";
+}
+
+body.kompakt #tabelle {
+  margin-left: 1em;
+}
+body.kompakt .einzel {
+  display: none;
+}
+
+body:not(.OBS) .OBSonly {
+  display: none;
+}
+
+body.OBS #tabelle div div  {
+  opacity: 0;
+}
+
+body.OBS #footer {
+  opacity: 0;
+}
+
+body.OBS .noOBS {
+  display: none;
+}
+
+body.OBS .is-visible {
+  animation: Items 800ms ease-in forwards;
+}
+
+@keyframes Items {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotateY(90deg);
+  }
+  60% {
+    transform: scale(1.4);
+  }
+  90% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+#tableHead {
+  background: var(--header);
+  color: white;
+  font-weight: bold;
+  font-size: 130%;
+  text-align: center;
+  border-top-right-radius: 5ex;
+  position: relative;
+  margin-left: 1px;
+  display: inline-block;
+  padding-left: 80px;
+  padding-right: 80px;
+}
+
+#tableHead::before {
+  background-image: url(/4f.svg);
+  width: 1.5ex;
+  height: 1.5ex;
+  content: "";
+  position: absolute;
+  background-size: contain;
+  left: 3ex;
+  top: 4px;
+}
+
+.center {
+  text-align: center;
+}
+
+/* styles.css */
+#toast-container {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 9999;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transition: opacity 0.5s, transform 0.5s;
+  transform: translateY(-20px);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}

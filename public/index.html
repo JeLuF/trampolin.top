@@ -1,0 +1,665 @@
+<html lang="de">
+    <head>
+        <title>Live-Ergebnisse</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" as="style" href="index.css" />
+    </head>
+    <body>
+        <div id="countdown-bar"></div>
+        <div class="select-container">
+            <div class="select">
+                <select id="veranstaltung"></select><br>
+                <select id="wettkampf"></select>
+            </div>
+        </div>
+        <div id="tabelle"></div>
+    </body>
+    <script>
+        "use strict";
+        var wettkaempfe;
+        var Class = null;
+
+        async function fetchJson(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch");
+                }
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                throw error; // Rethrow the error to handle it outside
+            }
+        }
+
+        function isRenderedInOBS() {
+            return window.hasOwnProperty("obsstudio"); // Replace 'obsProperty' with a known OBS-specific property
+        }
+
+        async function loadWettkampf(veranstaltung_id, path) {
+            wettkaempfe = await fetchJson(`/veranstaltung/${veranstaltung_id}/wettkaempfe`);
+            var wettkampf_id = 0;
+            if (path.length == 2) {
+                wettkampf_id = path[1];
+            } else {
+                wettkampf_id = wettkaempfe[0].id;
+            }
+
+            select_wettkampf.innerHTML = "";
+            wettkaempfe.forEach((w) => {
+                var el = document.createElement("option");
+                el.innerHTML = w.name;
+                el.value = w.id;
+                if (w.id == wettkampf_id) {
+                    el.selected = true
+                }
+                select_wettkampf.appendChild(el);
+            });
+            
+            return wettkampf_id;
+        }
+
+        async function veranstaltungChange(event) {
+            await loadWettkampf(select_veranstaltung.value, [])
+            updateResults(select_veranstaltung.value, select_wettkampf.value)
+        }
+
+        async function wettkampfChange(event) {
+            updateResults(select_veranstaltung.value, select_wettkampf.value)
+        }
+
+
+        async function loadData() {
+            try {
+                var path = window.location.hash.substring(1).split("/");
+                var veranstaltungen = await fetchJson("/veranstaltungen");
+
+                if (path.length == 3) {
+                    Class = path.pop();
+                    document.body.classList.add(Class);
+                }
+
+                //var veranstaltung = document.querySelector("#veranstaltung h2");
+                var veranstaltung_id = 0;
+                if (path.length == 2) {
+                    veranstaltung_id = path[0];
+                } else {
+                    veranstaltung_id = veranstaltungen[0].id;
+                }
+                //veranstaltung.dataset["id"] = veranstaltung_id;
+
+                
+                select_veranstaltung.innerHTML = "";
+                veranstaltungen.forEach((v) => {
+                    var el = document.createElement("option");
+                    el.innerHTML = v.name;
+                    el.value = v.id;
+                    if (v.id == veranstaltung_id) {
+                        el.selected = true
+                    }
+                    select_veranstaltung.appendChild(el);
+                });
+
+                var wettkampf_id = await loadWettkampf(veranstaltung_id, path);
+
+                select_veranstaltung.addEventListener("change", veranstaltungChange);
+
+                await updateResults(veranstaltung_id, wettkampf_id);
+                OBSreveal();
+            } catch (error) {
+                // Handle errors
+            }
+        }
+
+        function addTable(parent, title, wk, uebungen, phase) {
+            if (uebungen.length > 0 && uebungen[0].mannschaft != null) {
+                addTeamTable(parent, title, wk, uebungen, phase);
+            } else {
+                addIndividualTable(parent, title, wk, uebungen, phase);
+            }
+        }
+
+        function mannschaftenInPhase(uebungen, phase) {
+	    var mannschaft = [];
+	    uebungen
+		.filter((ue) => ue.phase == phase)
+		.forEach((ue) => {
+		    //ue.mannschaft = ue.vereinsname + " " + ue.mannschaft
+		    if (mannschaft[ue.mannschaft] == undefined) {
+			mannschaft[ue.mannschaft] = {
+			    punkte: null,
+			    turner: [],
+			    pivot1: null,
+			    pivot2: null,
+			};
+		    }
+		    // if ( ue.erg1 != null || ue.erg2 != null) {
+		    mannschaft[ue.mannschaft].turner.push(ue);
+		    // }
+		});
+	    return mannschaft;
+        }
+
+	function mannschaftenBerechneBestwerte(mannschaft) {
+	    for (var m in mannschaft) {
+		var points1 = mannschaft[m].turner.map((ue) => ue.erg1).filter((p) => p !== null);
+		var points2 = mannschaft[m].turner.map((ue) => ue.erg2).filter((p) => p !== null);
+		points1.sort((a, b) => b - a);
+		points2.sort((a, b) => b - a);
+		const p1 = points1.slice(0, 3).reduce((sum, value) => sum + value, 0);
+		const p2 = points2.slice(0, 3).reduce((sum, value) => sum + value, 0);
+		mannschaft[m].punkte = p1 + p2;
+
+		if (points1.length < 3) {
+		    mannschaft[m].pivot1 = points1[points1.length - 1];
+		} else {
+		    mannschaft[m].pivot1 = points1[2];
+		}
+
+		if (points2.length < 3) {
+		    mannschaft[m].pivot2 = points2[points2.length - 1];
+		} else {
+		    mannschaft[m].pivot2 = points2[2];
+		}
+	    }
+	}
+
+        function addTeamTable(parent, title, wk, uebungen, phase) {
+            var h = document.createElement("h2");
+            h.classList.add("Phase");
+            h.innerHTML = title;
+            parent.appendChild(h);
+            var d = document.createElement("div");
+
+            var vk1 = "Pflicht";
+            var vk2 = "K&uuml;r";
+
+            if (wk["bestesergebnisq1"] == "true") {
+                vk1 = "&Uuml;bung 1";
+                vk1 = "&Uuml;bung 2";
+            }
+
+            var tableHead = ""
+            if (isRenderedInOBS()) {
+                tableHead = `<div id="tableHead">${wk.name}</div>`;
+            }
+            if (phase == 2) {
+                d.innerHTML = `${tableHead}
+				<div class="teamfinale heading">
+			  		<div class="Platz"><span class="lang">Platz</span><span class="kurz">Pl.</span></div>
+			  		<div class="Mannschaft">Mannschaft</div>
+			  		<div class="Erste"><span class="lang">Übung</span><span class="kurz">Üb.</span></div>
+			  		<div class="Ergebnis"><span class="lang">Ergebnis</span><span class="kurz">Erg.</span></div>
+				</div>`;
+            } else {
+                d.innerHTML = `${tableHead}
+			<div class="team heading">
+  				<div class="Platz"><span class="lang">Platz</span><span class="kurz">Pl.</span></div>
+  				<div class="Mannschaft">Mannschaft</div>
+  				<div class="Erste"><span class="lang">Erste Übung</span><span class="kurz">1.Üb.</span></div>
+  				<div class="Zweite"><span class="lang">Zweite Übung</span><span class="kurz">2.Üb.</span></div>
+  				<div class="Ergebnis"><span class="lang">Ergebnis</span><span class="kurz">Erg.</span></div>
+			</div>`;
+            }
+            parent.appendChild(d);
+	    
+	    var mannschaft = mannschaftenInPhase(uebungen, phase) 
+	    mannschaftenBerechneBestwerte(mannschaft)
+
+	    console.log("Checkpoint",wk)
+	    if ((wk["finaleabnull"] == false && phase == 2)) {
+		    var vorMannschaft = mannschaftenInPhase(uebungen, 1)
+		    mannschaftenBerechneBestwerte(vorMannschaft)
+		    Object.keys(mannschaft).forEach( (m) => {
+			    mannschaft[m].punkte += vorMannschaft[m].punkte
+		    })
+	    }
+		
+
+            const reihenfolge = Object.keys(mannschaft).sort((a, b) => mannschaft[b].punkte - mannschaft[a].punkte);
+            var Platz = 0;
+            var vorherigePunkte = 0;
+            reihenfolge.forEach((m) => {
+                Platz++;
+                d = document.createElement("div");
+                var Platzanzeige = Platz
+                if (mannschaft[m].punkte == vorherigePunkte) {
+                    Platzanzeige = ""
+                }
+                vorherigePunkte = mannschaft[m].punkte
+                if (phase == 2) {
+                    d.innerHTML = `
+					<div class="teamfinale gesamt Platz${Platz}">
+		  				<div class="Platz">${Platzanzeige}</div>
+				 		<div class="Mannschaft">${m}</div>
+		  				<div class="Erste"></div>
+						<div class="Ergebnis">${parseFloat(mannschaft[m].punkte).toFixed(2)}</div>
+					</div>`;
+                } else {
+                    d.innerHTML = `
+					<div class="team gesamt Platz${Platz}">
+		  				<div class="Platz">${Platzanzeige}</div>
+				 		<div class="Mannschaft">${m}</div>
+		  				<div class="Erste"></div>
+		  				<div class="Zweite"></div>
+		  				<div class="Ergebnis">${parseFloat(mannschaft[m].punkte).toFixed(2)}</div>
+					</div>`;
+                }
+
+                parent.appendChild(d);
+                mannschaft[m].turner.forEach((t) => {
+                    var d = document.createElement("div");
+                    if (phase == 2) {
+                        var class1 = "";
+                        if (t.erg1 >= mannschaft[m].pivot1) class1 = "gewertet";
+                        d.innerHTML = `
+						<div class="teamfinale einzel Platz${Platz}">
+			  				<div class="Platz empty icon-container"></div>
+		  					<div class="Mannschaft">${t.vorname} ${t.name}</div>
+		  					<div class="Erste ${class1}">${t.erg1 == null ? "" : t.erg1.toFixed(2)}</div>
+		  					<div class="Ergebnis empty"></div>
+						</div>`;
+                        addTeamDetail(d, t)
+                    } else { // Vorkampf
+                        var class1 = "";
+                        var class2 = "";
+                        if (t.erg1 >= mannschaft[m].pivot1) class1 = "gewertet";
+                        if (t.erg2 >= mannschaft[m].pivot2) class2 = "gewertet";
+                        d.innerHTML = `
+						<div class="team einzel Platz${Platz}">
+			  				<div class="Platz empty icon-container"></div>
+		  					<div class="Mannschaft">${t.vorname} ${t.name}</div>
+		  					<div class="Erste ${class1}">${t.erg1 == null ? "" : t.erg1.toFixed(2)}</div>
+		  					<div class="Zweite ${class2}">${t.erg2 == null ? "" : t.erg2.toFixed(2)}</div>
+		  					<div class="Ergebnis empty"></div>
+						</div>`;
+                        addTeamDetail(d,t)
+                    }
+                    parent.appendChild(d);
+                });
+            });
+            if (Class == "paged") {
+                pager(Platz);
+            }
+        }
+
+        function pager(teamCount, itemsPerPage = 3, interval = 10000) {
+            const items = document.querySelectorAll(".item");
+            let currentPage = 0;
+
+            function showPage(page) {
+                // Hide all items
+                items.forEach((item) => (item.style.display = "none"));
+
+                // Calculate start and end indices
+                const start = page * itemsPerPage + 1;
+                const end = start + itemsPerPage;
+
+                var j=0;
+                document.querySelector("body.OBS #footer").classList.remove("is-visible")
+                for (var i = 1; i <= teamCount; i++) {
+                    document.querySelectorAll(`.Platz${i}`).forEach((e) => {
+                        if (i >= start && i < end) {
+                            setTimeout( () => {
+                                e.style.display = "grid";
+                            }, 0 + 10 * j + Math.random() * 300)
+                            j++
+                        } else {
+                            e.style.display = "none";
+                        }
+                    });
+                }
+                setTimeout(function () {
+                    document.querySelector("body.OBS #footer").classList.add("is-visible");
+                }, 700);
+            }
+
+            function nextPage() {
+                currentPage++;
+                if (currentPage * itemsPerPage >= teamCount) {
+                    currentPage = 0;
+                }
+                showPage(currentPage);
+            }
+            // Show the first page initially
+            showPage(currentPage);
+            // Set interval to switch pages every 15 seconds
+            setInterval(nextPage, interval);
+        }
+
+        function addTeamDetail(parent, turner) {
+            var erg2HTML=""
+            if (turner.erg2 != null)  {
+                erg2HTML = `
+                    <div class="haltung2">${parseFloat(turner.ue2.haltung).toFixed(1)}</div>
+				    <div class="schwierigkeit2">${turner.ue2.schwierigkeit}</div>
+				    <div class="tof2">${turner.ue2.timeofflight}</div>
+				    <div class="hd2">${turner.ue2.horizontaleabweichung}</div>
+				    <div class="strafwert2">${turner.ue2.strafwert}</div>
+				    <div class="punkte2">${turner.erg2.toFixed(2)}</div>
+                `
+            }
+            if (turner.erg1 != null) {
+                var detail = document.createElement("div")
+                parent.classList.add("clickable", "closed")
+                detail.classList.add("teamdetail")
+                detail.innerHTML=`
+                    <div class="Details">
+     	                <div class="h_haltung"><span class="lang">Haltung</span><span class="kurz">E</span></div>
+     	                <div class="h_schwierigkeit"><span class="lang">Schwierigkeit</span><span class="kurz">D</span></div>
+     	                <div class="h_tof"><span class="lang">Flugzeit</span><span class="kurz">ToF</span></div>
+     	                <div class="h_hd">HD</div>
+     	                <div class="h_strafwert"><span class="lang">Strafwert</span><span class="kurz">Strafe</span></div>
+     	                <div class="h_punkte"><span class="lang">Punkte</span><span class="kurz">Pkt</span></div>
+     	                <div class="haltung1">${parseFloat(turner.ue1.haltung).toFixed(1)}</div>
+     	                <div class="schwierigkeit1">${turner.ue1.schwierigkeit}</div>
+     	                <div class="tof1">${turner.ue1.timeofflight}</div>
+     	                <div class="hd1">${turner.ue1.horizontaleabweichung}</div>
+     	                <div class="strafwert1">${turner.ue1.strafwert}</div>
+     	                <div class="punkte1">${turner.erg1.toFixed(2)}</div>
+                        ${erg2HTML}
+     	            </div>
+                `
+                parent.appendChild(detail)
+                parent.addEventListener("click", (e) => {
+                    parent.classList.toggle("open")
+                    parent.classList.toggle("closed")
+                    if (parent.classList.contains("open")) {
+                        showToast("Aktualisierung pausiert. Details schließen, um zu aktualisieren.")
+                    }
+                })
+            }
+        }
+
+        function addIndividualTable(parent, title, wk, uebungen, phase) {
+            var h = document.createElement("h2");
+            h.innerHTML = title;
+            parent.appendChild(h);
+            var d = document.createElement("div");
+
+            var vk1 = "Pflicht";
+            var vk2 = "K&uuml;r";
+
+            if (wk["bestesergebnisq1"] == "true") {
+                vk1 = "&Uuml;bung 1";
+                vk1 = "&Uuml;bung 2";
+            }
+
+            if (phase == 2) {
+                d.innerHTML = `
+			<div class="finale heading">
+		  		<div class="Platz">Platz</div>
+		  		<div class="Name">Name</div>
+		  		<div class="Verein">Verein</div>
+		  		<div class="punkte">Punkte</div>
+			</div>`;
+            } else {
+                d.innerHTML = `
+			<div class="vorkampf heading">
+		  		<div class="Platz">Platz</div>
+		  		<div class="Name">Name</div>
+		  		<div class="Verein">Verein</div>
+		  		<div class="vk1">${vk1}</div>
+		  		<div class="vk2">${vk2}</div>
+		  		<div class="punkte">Punkte</div>
+			</div>`;
+            }
+            parent.appendChild(d);
+
+            uebungen
+                .filter((ue) => ue.phase == phase)
+                .forEach((ue) => {
+                    var el = document.createElement("div");
+                    var ergebnis;
+                    if (phase == 2) {
+                        // Finale
+                        if (wk["finaleabnull"] == "true") {
+                            ergebnis = ue.erg1 === null ? "" : ue.erg1;
+                        } else {
+                            console.error("Vorrundenpunkte gehen ins Finalergebnis ein");
+                        }
+                        el.innerHTML = `
+				<div class="finale closed">
+	       			    <div class="Platz icon-container"></div>
+				        <div class="Name">${ue.vorname} ${ue.name}</div>
+				        <div class="Verein">${ue.vereinsname}</div>
+				        <div class="punkte">${ergebnis}</div>
+				        <div class="Details">
+				        <div class="h_haltung">Haltung</div>
+				        <div class="h_schwierigkeit">Schwierigkeit</div>
+				        <div class="h_tof">Flugzeit</div>
+				        <div class="h_hd">HD</div>
+				        <div class="h_strafwert">Strafwert</div>
+				        <div class="h_punkte">Punkte</div>
+				        <div class="haltung1">${ue.ue1.haltung}</div>
+				        <div class="schwierigkeit1">${ue.ue1.schwierigkeit}</div>
+				        <div class="tof1">${ue.ue1.timeofflight}</div>
+				        <div class="hd1">${ue.ue1.horizontaleabweichung}</div>
+				        <div class="strafwert1">${ue.ue1.strafwert}</div>
+				        <div class="punkte1">${ergebnis}</div>
+				    </div>
+				</div>`;
+                        if (ergebnis != "") {
+                            var finale = el.querySelector(".finale");
+                            finale.classList.add("clickable");
+                            finale.addEventListener("click", (ev) => {
+                                el.querySelector(".finale").classList.toggle("open");
+                                el.querySelector(".finale").classList.toggle("closed");
+                            });
+                        }
+                    } else {
+                        if (ue.erg1 === null) {
+                            ergebnis = "";
+                        } else if (wk["bestesergebnisq1"] == "true") {
+                            ergebnis = Math.max(ue.erg1, ue.erg2);
+                        } else {
+                            ergebnis = (ue.erg1 + ue.erg2).toFixed(2);
+                        }
+                        const erg1 = ue.erg1 === null ? "" : ue.erg1;
+                        const erg2 = ue.erg2 === null ? "" : ue.erg2;
+
+                        var keys = ["haltung", "schwierigkeit", "timeofflight", "horizontaleabweichung"];
+                        keys.forEach((k) => {
+                            if (ue.ue1[k] == undefined || ue.ue1[k] === null) {
+                                ue.ue1[k] = "";
+                            }
+                            if (ue.ue2[k] == undefined || ue.ue2[k] === null) {
+                                ue.ue2[k] = "";
+                            }
+                        });
+
+                        if (ue.ue1["strafwert"] == undefined) {
+                            ue.ue1["strafwert"] = "";
+                        } else {
+                            if (ue.ue1["strafwert"] == null) {
+                                ue.ue1["strafwert"] = "-";
+                            }
+                        }
+                        if (ue.ue2["strafwert"] == undefined) {
+                            ue.ue2["strafwert"] = "";
+                        } else {
+                            if (ue.ue2["strafwert"] == null) {
+                                ue.ue2["strafwert"] = "-";
+                            }
+                        }
+
+                        el.innerHTML = `
+				<div class="vorkampf closed clickable">
+	       			  <div class="Platz icon-container"></div>
+				  <div class="Name">${ue.vorname} ${ue.name}</div>
+				  <div class="Verein">${ue.vereinsname}</div>
+				  <div class="vk1">${erg1}</div>
+				  <div class="vk2">${erg2}</div>
+				  <div class="punkte">${ergebnis}</div>
+				  <div class="Details">
+				    <div class="h_haltung">Haltung</div>
+				    <div class="h_schwierigkeit">Schwierigkeit</div>
+				    <div class="h_tof">Flugzeit</div>
+				    <div class="h_hd">HD</div>
+				    <div class="h_strafwert">Strafwert</div>
+				    <div class="h_punkte">Punkte</div>
+				    <div class="haltung1">${ue.ue1.haltung}</div>
+				    <div class="schwierigkeit1">${ue.ue1.schwierigkeit}</div>
+				    <div class="tof1">${ue.ue1.timeofflight}</div>
+				    <div class="hd1">${ue.ue1.horizontaleabweichung}</div>
+				    <div class="strafwert1">${ue.ue1.strafwert}</div>
+				    <div class="punkte1">${erg1}</div>
+				    <div class="haltung2">${ue.ue2.haltung}</div>
+				    <div class="schwierigkeit2">${ue.ue2.schwierigkeit}</div>
+				    <div class="tof2">${ue.ue2.timeofflight}</div>
+				    <div class="hd2">${ue.ue2.horizontaleabweichung}</div>
+				    <div class="strafwert2">${ue.ue2.strafwert}</div>
+				    <div class="punkte2">${erg2}</div>
+				  </div>
+				</div>`;
+                        el.querySelector(".vorkampf").addEventListener("click", (ev) => {
+                            el.querySelector(".vorkampf").classList.toggle("open");
+                            el.querySelector(".vorkampf").classList.toggle("closed");
+                        });
+                    }
+                    parent.appendChild(el);
+                });
+        }
+
+        async function updateResults(v_id, wk_id) {
+            currentTime = -1;
+            let newURL =
+                window.location.protocol + "//" + window.location.host + window.location.pathname + "#" + v_id + "/" + wk_id;
+            if (Class != null) {
+                newURL += "/" + Class;
+            }
+            history.pushState({ path: newURL }, "", newURL);
+
+            var wk = wettkaempfe.find((e) => e.id == wk_id);
+            var uebungen = await fetchJson(`/veranstaltung/${v_id}/wettkampf/${wk_id}/uebungen`);
+            var tabelle = document.querySelector("#tabelle");
+            tabelle.innerHTML = "";
+
+            if (wk["aktivephase"] == 2 || wk["aktivephase"] == null) {
+                // Finale oder abgeschlossen
+                addTable(tabelle, "Finale", wk, uebungen, 2);
+                if (!isRenderedInOBS()) {
+                    addTable(tabelle, "Qualifikation", wk, uebungen, 1);
+                }
+            } else if (wk["aktivephase"] == 1 && wk["status"] == "D") {
+                // Vorrunde in Durchführung
+                addTable(tabelle, "Qualifikation", wk, uebungen, 1);
+            } else {
+                // Wettkampf noch nicht gestartet
+                tabelle.innerHTML = `
+                    <div style="background: floralwhite; border: solid 6px crimson; border-radius: 12px; padding: 2em; font-size: 130%;max-width: 30em;margin: 2em auto;">
+                        Dieser Wettkampf wurde noch nicht gestartet.
+                    </div>`
+            }
+        }
+
+        function showToast(message) {
+            const toastContainer = document.getElementById('toast-container');
+        
+            // Create a new toast element
+            const toast = document.createElement('div');
+            toast.classList.add('toast');
+            toast.textContent = message;
+        
+            // Append the toast to the container
+            toastContainer.appendChild(toast);
+        
+            // Show the toast
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+        
+            // Hide the toast after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.addEventListener('transitionend', () => {
+                    toast.remove();
+                });
+            }, 3000);
+        }
+
+        function OBSreveal() {
+            if (!isRenderedInOBS()) {
+                return;
+            }
+            var i = 0;
+            document.querySelectorAll("body.OBS #tabelle div div ").forEach((e) => {
+                setTimeout(
+                    function () {
+                        e.classList.add("is-visible");
+                    },
+                    0 + 10 * i + Math.random() * 300,
+                );
+                i++;
+            });
+            setTimeout(function () {
+                document.querySelector("body.OBS #footer").classList.add("is-visible");
+            }, 700);
+        }
+
+        document.addEventListener("DOMContentLoaded", async function () {
+            await loadData();
+        });
+
+        var select_wettkampf = document.querySelector("#wettkampf");
+        var select_veranstaltung = document.querySelector("#veranstaltung");
+
+        let bar = document.getElementById("countdown-bar");
+        let totalTime = 15; // total time in seconds
+        let intervalTime = 1000; // interval time in milliseconds
+        let step = 100 / totalTime; // amount to reduce width each second
+        let currentTime = 0;
+        function shrinkBar() {
+            if (document.querySelectorAll(".open").length != 0) {
+                return
+            }
+            if (currentTime < totalTime) {
+                currentTime++;
+            } else {
+                loadData();
+            }
+            bar.style.width = 100 - step * currentTime + "%";
+        }
+        select_wettkampf.addEventListener("change", wettkampfChange);
+
+        let interval;
+
+        if (isRenderedInOBS()) {
+            bar.style.display = "none";
+            document.body.classList.add("OBS");
+
+            window.addEventListener("obsSourceActiveChanged", (event) => {
+                // document.body.innerHTML = 'obsSourceActiveChanged<pre>'+JSON.stringify(event)+'</pre>'
+                if (event.isTrusted == false) {
+                    // document.querySelector('#tabelle').innerHTML=""
+                    document.body.style.visibility = "hidden";
+                }
+            });
+        } else {
+            interval = setInterval(shrinkBar, intervalTime);
+        }
+    </script>
+    <div style="text-align: center; font-size: 120%">
+        <span class="OBSonly"
+            ><div
+                id="footer"
+                style="
+                    background: white;
+                    padding: 3px;
+                    margin: 1em auto;
+                    margin-left: 1em;
+                    display: inline-block;
+                    border-radius: 5px;
+                "
+            >
+                Alle Ergebnisse auf <b>www.trampolin.top</b>
+            </div></span
+        >
+    </div>
+
+    <div class="center">
+        <div class="legal noOBS"><a href="/impressum.html">Impressum &amp; Datenschutzerklärung</a></div>
+    </div>
+    <div id="toast-container"></div>
+</html>

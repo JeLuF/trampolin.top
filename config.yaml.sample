@@ -1,0 +1,9 @@
+database:
+  host: "127.0.0.1"
+  user: "username"
+  password: "password$123"
+  database: "baltic"
+  multipleStatements: false
+
+mirror:
+  destination: "wwwadmin@trampolin.top:/var/www/"
