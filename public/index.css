@@ -2,7 +2,7 @@
   --header: #D8232A;
   --rowdark: gainsboro;
   --rowmedium: lightgray;
-  --rowlight: rgb(252, 252, 252);
+  --rowlight: rgb(245, 245, 245);
 }
 
 
@@ -38,7 +38,7 @@ select {
   border-top: none;
   border-left: none;
   border-right: none;
-  width: 15em;
+  width: 20em;
 }
 
 select#veranstaltung {
@@ -63,8 +63,9 @@ select#veranstaltung {
 }
 */
 
-.vorkampf {  display: grid;
-  grid-template-columns: 3em 2fr 1fr 4em 4em 5em;
+.vorkampf {
+  display: grid;
+  grid-template-columns: 3em 2fr 1fr 4.5em 4.5em 5em;
   grid-template-rows: auto auto;
   gap: 2px 2px;
   grid-auto-flow: row;
@@ -154,14 +155,14 @@ select#veranstaltung {
 }
 
 .Details {  
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 1fr;
   grid-template-rows: 1fr auto auto;
   gap: 2px 2px;
   grid-auto-flow: row;
   grid-template-areas:
-    "h_haltung h_schwierigkeit h_tof h_hd h_strafwert h_punkte"
-    "haltung1 schwierigkeit1 tof1 hd1 strafwert1 punkte1"
-    "haltung2 schwierigkeit2 tof2 hd2 strafwert2 punkte2";
+    "h_spruenge h_haltung h_schwierigkeit h_tof h_hd h_strafwert h_punkte"
+    "spruenge1 haltung1 schwierigkeit1 tof1 hd1 strafwert1 punkte1"
+    "spruenge2 haltung2 schwierigkeit2 tof2 hd2 strafwert2 punkte2";
   grid-area: Details;
   font-size: 90%;
   display: grid;
@@ -180,6 +181,13 @@ select#veranstaltung {
 .Details div {
   background: var(--rowlight);
 }
+
+.h_spruenge {
+  justify-self: stretch;
+  grid-area: h_spruenge;
+  padding: 3px;
+}
+
 .h_haltung {
   justify-self: stretch;
   grid-area: h_haltung;
@@ -216,6 +224,12 @@ select#veranstaltung {
   padding: 3px;
 }
 
+.spruenge1 {
+  justify-self: stretch;
+  text-align: right;
+  grid-area: spruenge1;
+}
+
 .haltung1 {
   justify-self: stretch;
   text-align: right;
@@ -250,6 +264,12 @@ select#veranstaltung {
   justify-self: stretch;
   text-align: right;
   grid-area: punkte1;
+}
+
+.spruenge2 {
+  justify-self: stretch;
+  text-align: right;
+  grid-area: spruenge2;
 }
 
 .haltung2 {
@@ -307,13 +327,13 @@ select#veranstaltung {
 .clickable.closed .icon-container::before {
   background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg>');
   background-position: center;
-  margin-left: 1em;
+  margin-left: 0em;
 }
 
 .clickable.open .icon-container::before {
   background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>');
   background-position: center;
-  margin-left: 1em;
+  margin-left: 0em;
 }
 
 .clickable.closed {
@@ -468,6 +488,31 @@ body.OBS .select-container {
   body:not(.OBS)::before {
     width: 88px;  /* Adjust size as needed */
     height: 18px; /* Adjust size as needed */
+  }
+  .Details div {
+    background: var(--rowlight);
+  }
+  .vorkampf {
+    grid-template-columns: 2.5em 3fr  3em 3em 3em;
+    grid-template-rows: auto auto;
+    gap: 2px 2px;
+    grid-auto-flow: row;
+    grid-template-areas:
+      "Platz Name  vk1 vk2 punkte"
+      "Details Details  Details Details Details";
+  }
+  .vorkampf .verein, .vorkampf .h_verein {
+    display: none;
+  }
+
+  .finale {  display: grid;
+    grid-template-columns: 3em 2fr 1fr 5em;
+    grid-template-rows: auto auto;
+    gap: 2px 2px;
+    grid-auto-flow: row;
+    grid-template-areas:
+      "Platz Name Verein punkte"
+      "Details Details Details Details";
   }
   
 }

@@ -46,7 +46,7 @@ app.get("/veranstaltungen", (req, res) => {
 app.get("/veranstaltung/:veranstaltung/wettkaempfe", (req, res) => {
   const veranstaltung = req.params.veranstaltung;
   var sql
-  if (veranstaltung == 1001) {
+  if (veranstaltung == 91001) {
   	sql = `
 		SELECT distinct turnen_wettkaempfe.id, 
 			name, 
@@ -159,6 +159,39 @@ app.get(
 	  AND turnen_wettkaempfe.id=?
 	ORDER BY turnen_startplaetze.phase, turnen_startplaetze.gruppe, turnen_startplaetze.folge ASC 
 	`;
+    sql = `
+    	SELECT turnen_startplaetze.phase, sportler.vorname, 
+		sportler.name, 
+		vereine.name AS vereinsname, 
+		turnen_startplaetze.gruppe, turnen_startplaetze.folge, 
+		ue1.ergebnis AS erg1, ue1.id AS ue1_id,
+		ue2.ergebnis AS erg2, ue2.id AS ue2_id,
+		mannschaft.name AS mannschaft,
+		partner_sportler.vorname AS partner_vorname,
+		partner_sportler.name AS partner_name
+	FROM (turnen_turner, vereine, turnen_startplaetze, veranstaltungen, turnen_wettkaempfe, teilnehmer, sportler)
+	LEFT JOIN turnen_uebungen ue1 
+			   ON turnen_wettkaempfe.id=ue1.wettkampfid AND ue1.turnerid=turnen_turner.id AND ue1.durchgangposition=1 AND ue1.phaseposition=turnen_startplaetze.phase
+	LEFT JOIN turnen_uebungen ue2 
+			   ON turnen_wettkaempfe.id=ue2.wettkampfid AND ue2.turnerid=turnen_turner.id AND ue2.durchgangposition=2 AND ue2.phaseposition=turnen_startplaetze.phase
+	LEFT JOIN turnen_mannschaften mannschaft
+			   ON turnen_turner.mannschaftid=mannschaft.id
+	LEFT JOIN teilnehmer partner
+	         ON turnen_turner.teilnehmerid2=partner.id
+	LEFT JOIN sportler partner_sportler
+				ON partner.sportlerid = partner_sportler.id
+	WHERE turnen_startplaetze.wettkampfid=turnen_wettkaempfe.id
+  	  AND sportler.vereinid=vereine.id
+  	  AND turnen_turner.teilnehmerid=teilnehmer.id
+  	  AND turnen_turner.id=turnen_startplaetze.turnerid
+	  AND turnen_wettkaempfe.veranstaltungid=veranstaltungen.id
+	  AND teilnehmer.veranstaltungid=veranstaltungen.id
+	  AND teilnehmer.sportlerid=sportler.id
+	  AND turnen_startplaetze.durchgang=1
+	  AND veranstaltungen.id=?
+	  AND turnen_wettkaempfe.id=?
+	ORDER BY turnen_startplaetze.phase, turnen_startplaetze.gruppe, turnen_startplaetze.folge ASC 
+    `
 
     const inserts = [veranstaltung, wettkampf];
     var formattedSql = mysql.format(sql, inserts);
