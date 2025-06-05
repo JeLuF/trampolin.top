@@ -30,7 +30,7 @@ async function loadWettkampf(veranstaltung_id, path) {
 
     select_wettkampf.innerHTML = "";
     wettkaempfe = wettkaempfe.filter ( (w,i) => w == wettkaempfe.find( a => a.name == w.name ) )
-    wettkaempfe.sort( (a,b) => a.name > b.name )
+    wettkaempfe.sort( (a,b) => a.name.localeCompare( b.name ) );
     wettkaempfe.forEach((w) => {
         var el = document.createElement("option");
         el.innerHTML = w.name;
@@ -69,7 +69,8 @@ async function loadData() {
         if (path.length == 2) {
             veranstaltung_id = path[0];
         } else {
-            veranstaltung_id = veranstaltungen[0].id;
+		//veranstaltung_id = veranstaltungen[0].id;
+		veranstaltung_id = 1001;
         }
         //veranstaltung.dataset["id"] = veranstaltung_id;
 
@@ -97,8 +98,6 @@ async function loadData() {
 }
 
 function addTable(parent, title, wk, uebungen, phase) {
-    console.log("addTable, wk=", wk)
-    console.log("phase=", phase)
     if (uebungen.length > 0 && uebungen[0].mannschaft != null) {
         addTeamTable(parent, title, wk, uebungen, phase);
     } else {
@@ -193,7 +192,6 @@ function addTeamTable(parent, title, wk, uebungen, phase) {
     var mannschaft = mannschaftenInPhase(uebungen, phase)
     mannschaftenBerechneBestwerte(mannschaft)
 
-    console.log("Checkpoint", wk)
     if ((wk["finaleabnull"] == false && phase == 2)) {
         var vorMannschaft = mannschaftenInPhase(uebungen, 1)
         mannschaftenBerechneBestwerte(vorMannschaft)
@@ -359,9 +357,6 @@ function addTeamDetail(parent, turner) {
 }
 
 function addIndividualTable(parent, title, wk, uebungen, phase) {
-    var h = document.createElement("h2");
-    h.innerHTML = title;
-    parent.appendChild(h);
     var d = document.createElement("div");
 
     var vk1 = "Pflicht";
@@ -391,7 +386,6 @@ function addIndividualTable(parent, title, wk, uebungen, phase) {
           <div class="punkte"><span class="lang">Punkte</span><span class="kurz">Pkt</span></div>
     </div>`;
     }
-    parent.appendChild(d);
 
     var reihenfolge=[]
     uebungen.filter((ue) => ue.phase == phase).forEach( (ue) => {
@@ -417,6 +411,15 @@ function addIndividualTable(parent, title, wk, uebungen, phase) {
         reihenfolge.push(ue)
     })
 
+    if (reihenfolge.length == 0) {
+	    return;
+    }
+
+    var h = document.createElement("h2");
+    h.innerHTML = title;
+    parent.appendChild(h);
+    parent.appendChild(d);
+
     reihenfolge.sort( (a,b) => {
         a=a.ergebnis
         b=b.ergebnis
@@ -424,21 +427,18 @@ function addIndividualTable(parent, title, wk, uebungen, phase) {
         if (typeof(b) != 'number') {b=-1}
         return b-a
     })
-    console.log(reihenfolge)
 
 
     var Platz = 0
     reihenfolge.forEach((ue) => {
             var el = document.createElement("div");
             var ergebnis;
-            console.log(ue.vorname)
             var Platzanzeige = ""
             var clickable = ""
             Platz++
 
             if (phase >= 2) {
                 // Finale
-                console.log(ue.vorname, ue)
                 var ergebnis = ue.ergebnis
                 if (typeof(ergebnis) == "number") {
                     ergebnis = ue.ergebnis.toFixed(2)
@@ -583,7 +583,6 @@ function addIndividualTable(parent, title, wk, uebungen, phase) {
                         });        
                     }
             }
-            console.log(el)
             parent.appendChild(el);
         });
 }
@@ -597,20 +596,24 @@ async function updateResults(v_id, wk_id) {
     }
     history.pushState({ path: newURL }, "", newURL);
 
-    console.log("W E T T K A E M P F E", wettkaempfe)
     var wk = wettkaempfe.find((e) => e.id == wk_id);
     var uebungen = await fetchJson(`/veranstaltung/${v_id}/wettkampf/${wk_id}/uebungen`);
     var tabelle = document.querySelector("#tabelle");
     tabelle.innerHTML = "";
 
-    if (wk["aktivephase"] >= 2 || wk["aktivephase"] == null) {
+    if (wk["aktivephase"] == 3 || wk["aktivephase"] == null) {
         // Finale oder abgeschlossen
-	var ph = wk["aktivephase"]
-	ph = ph===null ? 3 : ph
-        addTable(tabelle, "Finale", wk, uebungen, ph)
+        addTable(tabelle, "Finale", wk, uebungen, 3)
+
         if (!isRenderedInOBS()) {
+            addTable(tabelle, "Halbfinale", wk, uebungen, 2);
             addTable(tabelle, "Qualifikation", wk, uebungen, 1);
         }
+    } else if (wk["aktivephase"] == 2) {
+	    addTable(tabelle, "Halbfinale", wk, uebungen, 2);
+	    if (!isRenderedInOBS()) {
+		    addTable(tabelle, "Qualifikation", wk, uebungen, 1);
+	    }
     } else if (wk["aktivephase"] == 1 && wk["status"] == "D") {
         // Vorrunde in Durchführung
         addTable(tabelle, "Qualifikation", wk, uebungen, 1);
